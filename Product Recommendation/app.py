@@ -9,7 +9,7 @@ import requests
 # ---------- Load and preprocess data ----------
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data.csv", encoding='ISO-8859-1') #  UK Retail Dataset, https://archive.ics.uci.edu/ml/datasets/Online+Retail
+    df = pd.read_csv("data.csv", encoding='ISO-8859-1') 
     df.dropna(subset=["Description", "CustomerID"], inplace=True)
     df = df[df["Quantity"] > 0]
     return df
@@ -38,16 +38,16 @@ def recommend_products(sim_matrix, product, n=5):
 # ---------- Streamlit UI ----------
 
 st.set_page_config(page_title="🛒 Product Recommender", layout="wide")
-st.title("🛍️ Product Recommendation System")
+st.title("Product Recommendation System")
 
 df = load_data()
 
-st.sidebar.header("🔍 Product Selector")
+st.sidebar.header("Product Selector")
 all_products = sorted(df['Description'].unique())
 selected_product = st.sidebar.selectbox("Select a Product", all_products)
 print("No of Available products:", df['Description'].unique().shape[0])
 # Show recommendations
-st.header(f"🔁 Recommendations for: {selected_product}")
+st.header(f"Recommendations for: {selected_product}")
 sim_matrix = create_item_similarity(df)
 recs = recommend_products(sim_matrix, selected_product)
 
@@ -59,7 +59,7 @@ else:
     st.warning("No similar products found.")
 
 # ---------- Aggregation Section ----------
-st.header("📊 Product Sales Summary")
+st.header("Product Sales Summary")
 
 top_items = df.groupby("Description")['Quantity'].sum().sort_values(ascending=False).head(10).reset_index()
 fig = px.bar(top_items, x='Quantity', y='Description', orientation='h', title='Top 10 Bestselling Products')
@@ -70,5 +70,6 @@ rev_items['Revenue'] = rev_items['Quantity'] * rev_items['UnitPrice']
 top_revenue = rev_items.groupby("Description")['Revenue'].sum().sort_values(ascending=False).head(10).reset_index()
 fig2 = px.pie(top_revenue, names='Description', values='Revenue', title='Top Revenue-Generating Products')
 st.plotly_chart(fig2, use_container_width=True)
+
 
 
